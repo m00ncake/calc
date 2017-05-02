@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator Version 1.0</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script>
+        var numPress;
+        var inputNumArr = [""];
+        var input_index = 0;
+        var num1, num2, operator1, operator2, result;
+        function calculate() {
+            switch(inputNumArr[1]) {
+                case "+":
+                    result = num1 + num2;
+                    console.log("equation: ", result,"=", num1, "+", num2);
+                    break;
+                case "-":
+                    result = num1 - num2;
+                    console.log("equation: ", result,"=", num1, "-", num2);
+                    break;
+                case "x":
+                    result = num1 * num2;
+                    console.log("equation: ", result,"=", num1, "x", num2);
+                    break;
+                case "/":
+                    result = num1 / num2;
+                    console.log("equation: ", result,"=", num1, "/", num2);
+                    break;
+                default:
+            }
+        }
+
+        function inputNumber() {
+            //if a number is pressed after an equal sign: start new
+            if (operator2 === "=") {
+                console.log("operator2 function works");
+                inputNumArr = [];
+                console.log(inputNumArr);
+                inputNumArr.push("");
+                console.log(inputNumArr);
+                operator2 = null;
+                console.log(operator2);
+                console.log(input_index);
+            }
+//          IF a decimal point is pressed: check if previous button pressed was a decimal as well
+            else if(numPress === ".") {
+//              IF there is something is in inputNumArr[2]
+                if(inputNumArr[2]) {
+//                  AND IF it includes ".": jump out of the inputNumber function
+                    if(inputNumArr[2].includes(".")) {
+                        console.log("a second decimal is found in inputNumArr[2]");
+                        return;
+                    }
+//                ELSE if inputNumArr[0] includes ".": then jump out of the inputNumber function
+                } else if(inputNumArr[0].includes(".")) {
+                    console.log("a second decimal is found in inputNumArr[1]");
+                    return;
+                }
+            }
+
+//          STORE
+            inputNumArr[input_index] += (numPress);
+            console.log("number input: ", inputNumArr);
+
+//          DISPLAY
+            $("p.display-area").text(inputNumArr[input_index]);
+        }
+        function inputOperator() {
+//          IF the 2nd Operator is an "="
+            if(operator2 === "=") {
+                console.log("Input Operator function after Equal Press");
+                console.log(input_index);
+                input_index++;
+                console.log(input_index);
+                inputNumArr.push("");
+                console.log(inputNumArr);
+//              AND IF "=" is pressed again:
+                if (numPress === "=") {
+                    console.log("equal sign is pressed again");
+                    console.log("num1: ", num1, "num2: ", num2, "result: ", result);
+                    num1 = result;
+                    console.log(num1);
+                    inputNumArr[input_index] += operator1;
+                    console.log(inputNumArr);
+                    input_index++;
+                    console.log(input_index);
+                    inputNumArr.push(num2);
+                    console.log(inputNumArr);
+                    calculate();
+                    $("p.display-area").text(result);
+                    return;
+                }
+                inputNumArr[input_index] += numPress;
+                console.log(inputNumArr);
+                input_index++;
+                console.log(input_index);
+                inputNumArr.push("");
+                console.log(inputNumArr);
+                operator2 = null;
+                console.log(operator2);
+            } else if(operator2 === "+" || operator2 === "-" || operator2 === "x" || operator2 === "/") {
+                console.log("operator check success");
+//          IF there are two number in the Array, then calculate the equation
+            } else if(inputNumArr[0] && inputNumArr[2]){
+                input_index++;
+                console.log("index in input Operator: ", input_index);
+                inputNumArr.push("");
+                console.log(inputNumArr);
+                inputNumArr[input_index] += (numPress);
+                console.log(inputNumArr);
+                num1 = parseFloat(inputNumArr[0]);
+                console.log("num1:", num1);
+                console.log("current inputNumArr Index: ",input_index);
+                num2 = parseFloat(inputNumArr[2]);
+                console.log("num2: ", num2);
+                operator2 = inputNumArr[3];
+                console.log("operator 2: ", operator2);
+//              AND IF the 2nd Operator is an "=":
+                if(inputNumArr[3] === "="){
+                    calculate();
+                    console.log(inputNumArr);
+                    console.log("input index: ", input_index);
+                    inputNumArr = [];
+                    console.log("inputNumArr after clear: ", inputNumArr);
+                    inputNumArr.push(result);
+                    console.log("inputNumArr after push: ", inputNumArr);
+                    console.log("input index: ", input_index);
+                    input_index--;
+                    input_index--;
+                    input_index--;
+                    console.log("input index: ", input_index);
+                    $("p.display-area").text(result);
+                    console.log(result);
+                    console.log("operator 2: ",operator2);
+//              ELSE all other Operator:
+                } else {
+                    calculate();
+                    console.log(result);
+                    inputNumArr = [];
+                    console.log("inputNumArr after clearing Array: ", inputNumArr);
+                    inputNumArr.push(result);
+                    console.log("calculation result pushed into empty array", inputNumArr);
+                    inputNumArr.push(operator2);
+                    console.log("operator 2 pushed on after calculation result: ", inputNumArr);
+                    operator2 = null;
+                    console.log("operator2: ", operator2);
+                    inputNumArr.push("");
+                    console.log("empty string pushed to the end of InputNumArr: ", inputNumArr);
+                    input_index--;
+                    console.log("index in input Operator decreased: ", input_index);
+                    $("p.display-area").text(result);
+                    console.log(result);
+                }
+//          IF more than one Operator is pressed in a row, then only store the last Operator pressed
+            } else if(inputNumArr[1]) {
+//              AND IF index 1 equals to "="
+                if(inputNumArr[1] === "=") {
+                    console.log(input_index);
+                    console.log(inputNumArr);
+
+                } else {
+                    inputNumArr[1] = numPress;
+                    console.log(inputNumArr);
+                    console.log(input_index);
+                }
+//                inputNumArr[1] = numPress;
+//                console.log(inputNumArr);
+//                console.log(input_index);
+//          ELSE allow Operator pressed to fill up the inputNumArr[1]
+            } else {
+                input_index++;
+                console.log("index in input Operator: ", input_index);
+                inputNumArr.push("");
+                console.log(inputNumArr);
+                inputNumArr[input_index] += (numPress);
+                console.log(inputNumArr);
+                operator1 = numPress;
+                console.log("Operator 1: ", operator1);
+                input_index++;
+                console.log("index at the end of input Operator: ",input_index);
+                inputNumArr.push("");
+                console.log(inputNumArr);
+            }
+        }
+
+        $(document).ready(function(){
+           $(".btn").on("click",function(){
+               numPress = $(this).text();
+               switch (numPress) {
+                   case "C":
+                   case "CE":
+                       $("p.display-area").text(0);
+                       break;
+                   case "/":
+                   case "x":
+                   case "-":
+                   case "+":
+                   case "=":
+                       inputOperator();
+                       break;
+                   default:
+                       inputNumber();
+                       break;
+               }
+           });
+        });
+    </script>
+    <style>
+        body {
+            background-image: url(images/numbers_background.09.jpg);
+            margin-top: 2vw;
+            font-size: 0;
+        }
+        .bodyDiv {
+            width: 31vw;
+            height: 45vw;
+            margin: 0 auto;
+            border: 2px solid #aaaaaa;
+            background-color: #f0f0f0;
+        }
+        header {
+            width: 31vw;
+            height: 10vw;
+        }
+        .viewport {
+            height: 9vw;
+            border: 1px solid darkgray;
+            margin: 1.5vh;
+            font-size: 9vmin;
+            background-color: #eaf9f8;
+        }
+        section.left-sect {
+            width: 22vw;
+            height: 34vw;
+            float: left;
+            margin-left: 0.5vh;
+        }
+        section.right-sect {
+            width: 7vw;
+            height: 34vw;
+            float: left;
+        }
+        .clears button {
+            width: 10.2vw;
+            height: 6vw;
+            margin: 0.7vh 0.4vh;
+            padding: 0;
+            font-size: 5vmin;
+        }
+        .numbers button {
+            width: 7vw;
+            height: 6vw;
+            margin: 0.2vh 0.2vh;
+            padding: 0;
+            font-size: 5vmin;
+        }
+        .operators button {
+            width: 7vw;
+            height: 6vw;
+            margin: 0.2vh 0.7vh;
+            padding: 0;
+            font-size: 5vmin;
+        }
+        .operators .divid {
+            margin: 0.7vh 0.7vh;
+            padding: 0;
+        }
+        .operators .plus {
+            width: 7vw;
+            height: 12vw;
+            padding: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="bodyDiv">
+        <header class="top-view">
+            <div class="viewport">
+                <p class="display-area">0</p>
+            </div>
+        </header>
+        <section class="left-sect">
+            <div class="clears">
+                <button class="btn btn-primary">C</button>
+                <button class="btn btn-primary">CE</button>
+            </div>
+            <div class="numbers">
+                <button class="btn btn-default number">7</button>
+                <button class="btn btn-default number">8</button>
+                <button class="btn btn-default number">9</button>
+                <button class="btn btn-default number">4</button>
+                <button class="btn btn-default number">5</button>
+                <button class="btn btn-default number">6</button>
+                <button class="btn btn-default number">1</button>
+                <button class="btn btn-default number">2</button>
+                <button class="btn btn-default number">3</button>
+                <button class="btn btn-default number">0</button>
+                <button class="btn btn-default number decimal">.</button>
+                <button class="btn btn-default operator equal">=</button>
+            </div>
+        </section>
+        <section class="right-sect">
+            <div class="operators">
+                <button class="btn btn-danger operator divid">/</button>
+                <button class="btn btn-danger operator times">x</button>
+                <button class="btn btn-danger operator minus">-</button>
+                <button class="btn btn-danger operator plus">+</button>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
