@@ -9,31 +9,49 @@
         var numPress;
         var inputNumArr = [""];
         var input_index = 0;
-        var num1, num2, operator1, operator2, result;
+        var num1, num2, operator1, operator2, op2Backup, result;
+
+        function clearAll() {
+            numPress;
+            inputNumArr = [""];
+            input_index = 0;
+            num1, num2, operator1, operator2, op2Backup, result;
+            $("p.display_area").text("0");
+        }
+
+        function clearEntry() {
+            var newEntry = inputNumArr[input_index].slice(0, inputNumArr[input_index].length - 1);
+            console.log(newEntry);
+            inputNumArr[input_index] = newEntry;
+            console.log(inputNumArr);
+            $("p.display-area").text(newEntry);
+        }
+
         function calculate() {
             switch(inputNumArr[1]) {
                 case "+":
-                    result = num1 + num2;
+                    result = parseFloat(num1) + parseFloat(num2);
                     console.log("equation: ", result,"=", num1, "+", num2);
                     break;
                 case "-":
-                    result = num1 - num2;
+                    result = parseFloat(num1) - parseFloat(num2);
                     console.log("equation: ", result,"=", num1, "-", num2);
                     break;
                 case "x":
-                    result = num1 * num2;
+                    result = parseFloat(num1) * parseFloat(num2);
                     console.log("equation: ", result,"=", num1, "x", num2);
                     break;
                 case "/":
-                    result = num1 / num2;
+                    result = parseFloat(num1) / parseFloat(num2);
                     console.log("equation: ", result,"=", num1, "/", num2);
                     break;
-                default:
+                default: // TODO sasjdfajsdf
             }
         }
 
         function inputNumber() {
             //if a number is pressed after an equal sign: start new
+//            op2Backup=null;
             if (operator2 === "=") {
                 console.log("operator2 function works");
                 inputNumArr = [];
@@ -44,6 +62,7 @@
                 console.log(operator2);
                 console.log(input_index);
             }
+
 //          IF a decimal point is pressed: check if previous button pressed was a decimal as well
             else if(numPress === ".") {
 //              IF there is something is in inputNumArr[2]
@@ -73,9 +92,8 @@
                 console.log("Input Operator function after Equal Press");
                 console.log(input_index);
                 input_index++;
-                console.log(input_index);
                 inputNumArr.push("");
-                console.log(inputNumArr);
+                console.log("inputNumArr: ",inputNumArr, "input_index: ", input_index);
 //              AND IF "=" is pressed again:
                 if (numPress === "=") {
                     console.log("equal sign is pressed again");
@@ -83,13 +101,14 @@
                     num1 = result;
                     console.log(num1);
                     inputNumArr[input_index] += operator1;
-                    console.log(inputNumArr);
                     input_index++;
-                    console.log(input_index);
                     inputNumArr.push(num2);
-                    console.log(inputNumArr);
                     calculate();
                     $("p.display-area").text(result);
+                    inputNumArr.splice(0,3, result);
+                    input_index -= 2;
+                    console.log("inputNumArr: ",inputNumArr, "input_index: ", input_index);
+                    console.log("num1: ", num1, "num2: ", num2, "result: ", result);
                     return;
                 }
                 inputNumArr[input_index] += numPress;
@@ -100,10 +119,9 @@
                 console.log(inputNumArr);
                 operator2 = null;
                 console.log(operator2);
-            } else if(operator2 === "+" || operator2 === "-" || operator2 === "x" || operator2 === "/") {
-                console.log("operator check success");
+
 //          IF there are two number in the Array, then calculate the equation
-            } else if(inputNumArr[0] && inputNumArr[2]){
+            } else if(inputNumArr[0] && inputNumArr[2]) {
                 input_index++;
                 console.log("index in input Operator: ", input_index);
                 inputNumArr.push("");
@@ -112,13 +130,13 @@
                 console.log(inputNumArr);
                 num1 = parseFloat(inputNumArr[0]);
                 console.log("num1:", num1);
-                console.log("current inputNumArr Index: ",input_index);
+                console.log("current inputNumArr Index: ", input_index);
                 num2 = parseFloat(inputNumArr[2]);
                 console.log("num2: ", num2);
                 operator2 = inputNumArr[3];
                 console.log("operator 2: ", operator2);
 //              AND IF the 2nd Operator is an "=":
-                if(inputNumArr[3] === "="){
+                if (inputNumArr[3] === "=") {
                     calculate();
                     console.log(inputNumArr);
                     console.log("input index: ", input_index);
@@ -132,18 +150,17 @@
                     input_index--;
                     console.log("input index: ", input_index);
                     $("p.display-area").text(result);
-                    console.log(result);
-                    console.log("operator 2: ",operator2);
+                    console.log("operator 2: ", operator2);
 //              ELSE all other Operator:
                 } else {
                     calculate();
-                    console.log(result);
                     inputNumArr = [];
                     console.log("inputNumArr after clearing Array: ", inputNumArr);
                     inputNumArr.push(result);
                     console.log("calculation result pushed into empty array", inputNumArr);
                     inputNumArr.push(operator2);
                     console.log("operator 2 pushed on after calculation result: ", inputNumArr);
+                    op2Backup = operator2;
                     operator2 = null;
                     console.log("operator2: ", operator2);
                     inputNumArr.push("");
@@ -153,21 +170,29 @@
                     $("p.display-area").text(result);
                     console.log(result);
                 }
+//          ELSE IF index 0 is an empty string: return
+            } else if(inputNumArr[0] === "") {
+                   return;
+
 //          IF more than one Operator is pressed in a row, then only store the last Operator pressed
             } else if(inputNumArr[1]) {
+                inputNumArr[1] = numPress;
 //              AND IF index 1 equals to "="
                 if(inputNumArr[1] === "=") {
-                    console.log(input_index);
-                    console.log(inputNumArr);
+                    console.log("inputNumArr: ",inputNumArr,"input_index: ", input_index);
+                    console.log("num1: ", num1, "operator1: ", operator1, "num2: ", num2,"operator2: ", operator2,"op2Backup: ",op2Backup, "result: ", result);
+                    inputNumArr.splice(1, 2, operator1, result);
+                    num1 = inputNumArr[0];
+                    num2 = inputNumArr[0];
+                    calculate();
+                    console.log("inputNumArr: ",inputNumArr,"input_index: ", input_index);
+                    $("p.display-area").text(result);
+                    inputNumArr.splice(0,3,result);
+                    input_index -= 2;
+                    console.log("inputNumArr: ",inputNumArr,"input_index: ", input_index);
 
-                } else {
-                    inputNumArr[1] = numPress;
-                    console.log(inputNumArr);
-                    console.log(input_index);
                 }
-//                inputNumArr[1] = numPress;
-//                console.log(inputNumArr);
-//                console.log(input_index);
+
 //          ELSE allow Operator pressed to fill up the inputNumArr[1]
             } else {
                 input_index++;
@@ -190,8 +215,10 @@
                numPress = $(this).text();
                switch (numPress) {
                    case "C":
+                       clearAll();
+                       break;
                    case "CE":
-                       $("p.display-area").text(0);
+                       clearEntry();
                        break;
                    case "/":
                    case "x":
